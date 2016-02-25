@@ -15,4 +15,5 @@ We plan to make a smart car which can avoid obstacles automatically by using ima
     │   ├── implementation         - Code for car's normal movement   
     │   ├── test                   - Test code for move accuracy 
     │   └── training               - Training code 
+    │   └── data                   - Store all the training images 
     └── README.md                  - Some explanation for Smart Car project 
