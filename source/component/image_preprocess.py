@@ -4,7 +4,7 @@ import cv2
 from matplotlib import pyplot as plt
 #线性映射数组
 def SubLinear():
-    aSubLinear = [0]*256
+    aSubLinear = np.zeros(256,np.int8)
     for i in range(256):
         if i<60:
             aSubLinear[i] = int(30.0/60*i)
@@ -27,10 +27,11 @@ def LinearTrans(image,array=SubLinear()):
 
 #图像处理，返回摄像头每一帧处理后的灰度图。
 #img:灰度图
+#(width,height):输出图像尺寸
 #zoomR:图像缩放倍数，默认缩小2倍
 #输出处理后的图像
-def imageDW(img,zoomR=2):
-    height,width=img.shape
+def imageDW(img,(width,height),zoomR=2):
+    #height,width=img.shape
     img=cv2.resize(img,(width/zoomR,height/zoomR),interpolation=cv2.INTER_CUBIC)
     #线性变换
     img = LinearTrans(img,SubLinear())
@@ -53,7 +54,7 @@ def imageDW(img,zoomR=2):
 # while(cap.isOpened()):
 #     ret,frame=cap.read()
 #     img = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)#RGB转换为灰度图
-#     cv2.imshow('img',imageDW(img,1))
+#     cv2.imshow('img',imageDW(img,img.shape,1))
 #     if cv2.waitKey(1) & 0xFF == ord('q'):
 #         break
 # cap.release()
