@@ -1,10 +1,14 @@
 # -*- coding: UTF-8 -*-
+
+# third party library
 import numpy as np
 import cv2
-from matplotlib import pyplot as plt
 
-WIDTH = 320
-HEIGHT = 240
+# my library - configuration
+import sys
+sys.path.append("../config")
+import common as common_config
+
 #线性映射数组
 def SubLinear():
     aSubLinear = np.zeros(256,np.int8)
@@ -55,8 +59,8 @@ def imageDW(img,(height,width),zoomR=1):
 # 初始化摄像头
 def initCap():
     cap = cv2.VideoCapture(1)
-    cap.set(cv2.cv.CV_CAP_PROP_FRAME_WIDTH,WIDTH);
-    cap.set(cv2.cv.CV_CAP_PROP_FRAME_HEIGHT,HEIGHT);
+    cap.set(cv2.cv.CV_CAP_PROP_FRAME_WIDTH,common_config.CAP_WIDTH);
+    cap.set(cv2.cv.CV_CAP_PROP_FRAME_HEIGHT,common_config.CAP_HEIGHT);
     return cap
 # 裁剪图像,img为灰度图
 def cutImage(img):
