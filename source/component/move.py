@@ -35,6 +35,8 @@ class Move(object):
         self.left_wheel = Wheel()
         self.right_wheel = Wheel()
 
+        print("move initiated")
+
     def forward(self, tf):
         self.left_wheel.forward()
         self.right_wheel.forward()
