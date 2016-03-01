@@ -32,8 +32,8 @@ class Move(object):
     def __init__(self):
         gpio.setmode(gpio.BOARD)
 
-        self.left_wheel = Wheel()
-        self.right_wheel = Wheel()
+        self.left_wheel = Wheel(11, 12, 16, 18)
+        self.right_wheel = Wheel(13, 15, 29, 31)
 
         print("move initiated")
 
@@ -41,27 +41,32 @@ class Move(object):
         self.left_wheel.forward()
         self.right_wheel.forward()
         time.sleep(tf)
-        gpio.cleanup()
+        #gpio.cleanup()
+        self.stop()
 
     def backward(self, tf):
         self.left_wheel.backward()
         self.right_wheel.backward()
         time.sleep(tf)
-        gpio.cleanup()
+        #gpio.cleanup()
+        self.stop()
 
     def turn_left(self, tf):
         self.right_wheel.forward()
         time.sleep(tf)
-        gpio.cleanup()
+        #gpio.cleanup()
+        self.stop()
 
     def turn_right(self, tf):
         self.left_wheel.forward()
         time.sleep(tf)
-        gpio.cleanup()
+        #gpio.cleanup()
+        self.stop()
 
     def stop(self):
         self.left_wheel.stop()
         self.right_wheel.stop()
+        #gpio.cleanup()
 
     def shutdown(self):
         self.stop()
