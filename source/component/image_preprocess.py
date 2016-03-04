@@ -43,16 +43,16 @@ def imageDW(img,(height,width),zoomR=1):
     #线性变换
     img = LinearTrans(img,SubLinear())
     #直方图均衡化
-    img = cv2.equalizeHist(img)
+    #img = cv2.equalizeHist(img)
     #降噪-高斯模糊
     img = cv2.GaussianBlur(img,(3,3),0)
     #降噪-中值滤波
     img = cv2.medianBlur(img,3)
     #形态学梯度
-    element = cv2.getStructuringElement(cv2.MORPH_RECT,(3, 3))
-    img_dilate = cv2.dilate(img, element)
-    img_erode = cv2.erode(img, element)
-    img = cv2.absdiff(img_dilate,img_erode)
+    # element = cv2.getStructuringElement(cv2.MORPH_RECT,(3, 3))
+    # img_dilate = cv2.dilate(img, element)
+    # img_erode = cv2.erode(img, element)
+    # img = cv2.absdiff(img_dilate,img_erode)
     #反色，即对二值图每个像素取反
     img = cv2.bitwise_not(img);
     return img
