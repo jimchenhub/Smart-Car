@@ -20,6 +20,7 @@ import cv2
 sys.path.append("/home/pi/Documents/Github/Smart-Car/source/config")
 sys.path.append("/home/pi/Documents/Github/Smart-Car/source/component")
 import move
+import image_preprocess as imgprocess
 import common as common_config
 
 # save image function
@@ -42,6 +43,7 @@ while(cap.isOpened()):
     # Our operations on the frame come here
     # Change frame to gray level image
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+    img = imgprocess.imageDW(gray,gray.shape,4)
 
     # Display the resulting frame
     cv2.imshow('frame',frame)
