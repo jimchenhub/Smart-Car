@@ -1,3 +1,4 @@
+# -*- coding: UTF-8 -*-
 """
 network.py
 ~~~~~~~~~~
@@ -32,7 +33,7 @@ class Network(object):
         ever used in computing the outputs from later layers."""
         self.num_layers = len(sizes)
         self.sizes = sizes
-        self.biases = [np.random.randn(y, 1) for y in sizes[1:]]
+        self.biases = [np.random.randn(y, 1) for y in sizes[1:]] #np.random.randn(x,y) 可以返回x行，每行y个数据，这些数据满足均值为0，方差为1的正态分布
         self.weights = [np.random.randn(y, x)
                         for x, y in zip(sizes[:-1], sizes[1:])]
 
@@ -58,7 +59,10 @@ class Network(object):
             random.shuffle(training_data)
             mini_batches = [
                 training_data[k:k+mini_batch_size]
-                for k in xrange(0, n, mini_batch_size)]
+                for k in xrange(0, n, mini_batch_size)] 
+                # xrannge的用法和range一样，但是是生成的一个生成器，不是直接的值，三个参数的话就是在0到n-1直接步长为mini_batch_size来取值
+                # eg：a = [1,2,3,4,5,6,7,8,9,10] batch = [a[k:k+2] for k in xrange(0, 10, 2)]
+                # 这个时候的batch为[[1,2],[3,4],[5,6],[7,8],[9,10]] 感觉上就是将数据分成了很多个段
             for mini_batch in mini_batches:
                 self.update_mini_batch(mini_batch, eta)
             if test_data:
