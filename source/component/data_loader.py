@@ -20,7 +20,7 @@ import cv2
 # static variables
 DATA_DIR = "../data/"
 available_type = [".gif", ".jpg", ".jpeg", ".bmp", ".png"]
-INPUT_SIZE = 201300
+INPUT_SIZE = 76800
 
 # 从pkl或其他类型的文件中反序列化出训练数据
 def load_data():
