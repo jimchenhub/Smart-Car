@@ -21,6 +21,14 @@ def SubLinear():
             aSubLinear[i] = int((255.0-220.0)/(255-200)*(i-200)+220)
     return aSubLinear
 
+#二值变换
+def SubLinear2():
+    aSubLinear = np.zeros(256,np.float32)
+    for i in range(256):
+        if i<200:
+            aSubLinear[i] = 0.0
+    return aSubLinear
+
 #线性变换
 def LinearTrans(image,array=SubLinear()):
     row = image.shape[0]

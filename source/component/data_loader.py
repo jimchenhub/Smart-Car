@@ -18,13 +18,13 @@ import numpy as np
 import cv2
 
 # static variables
-DATA_DIR = "../data/"
+DATA_DIR = "../data/expanded/"
 available_type = [".gif", ".jpg", ".jpeg", ".bmp", ".png"]
-INPUT_SIZE = 76800
+INPUT_SIZE = 3072
 
 # 从pkl或其他类型的文件中反序列化出训练数据
 def load_data():
-    f = open('../data/data.pkl', 'rb')
+    f = open(DATA_DIR+"data.pkl", 'rb')
     training_data, validation_data, test_data = cPickle.load(f)
     f.close()
     return (training_data, validation_data, test_data)
@@ -66,22 +66,22 @@ def generate_data():
         fullfile = os.path.join(DATA_DIR, file)
         # read image
         img = cv2.imread(fullfile)
+        img = cv2.resize(img,(64,48),interpolation=cv2.INTER_CUBIC)
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
         gray = gray.ravel() # 平展化
         gray = [y/255.0 for y in gray] # 将每个值都变成小于1的灰度比例
         # calculate result. this value will be read from file name
-        result = 0
+        result = get_result(file)
         # save data 
         images[count] = gray
         results[count] = result
         count += 1
+        print "finish ", count, " image"
     # 构建pkl文件的内容
-    training_data = (images, results)
-    # 暂时使用training数据代替validation数据,暂时使用training数据代替test数据
-    datas = (training_data, training_data, training_data)
+    datas = ((images[:-200], results[:-200]), (images[-200:-100], results[-200:-100]), (images[-100:], results[-100:]))
     print datas
     # save to file
-    cPickle.dump(datas, open(DATA_DIR+"data.pkl","wb"))
+    cPickle.dump(datas, open(DATA_DIR+"data.pkl","wb"), protocol=2)
 
 def file_extension(path): 
     return os.path.splitext(path)[1]
@@ -95,5 +95,13 @@ def vectorized_result(j):
     e[j] = 1.0
     return e
 
-# training_data, validation_data, test_data = load_data_wrapper()
-# print training_data,"\n\n", validation_data,"\n\n", test_data
+def get_result(file):
+    result = 0
+    direction = file.split("-")[1]
+    if direction == "w":
+        result = 0
+    elif direction == "a":
+        result = 1
+    elif direction == "d":
+        result = 2
+    return result
