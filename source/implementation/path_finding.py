@@ -26,6 +26,7 @@ import network
 import image_preprocess as imgprocess
 import common as common_config
 
+THRESHOLD = 220
 
 ## Main function
 # major variables
@@ -40,14 +41,14 @@ while(cap.isOpened()):
     # Our operations on the frame come here
     # Change frame to gray level image and do some trasition
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-    img = cv2.resize(gray,(64,48),interpolation=cv2.INTER_CUBIC)
+    img = cv2.resize(gray,(common_config.CAP_WIDTH,common_config.CAP_HEIGHT),interpolation=cv2.INTER_CUBIC)
     new_img = np.zeros(img.shape)
     for i in range(img.shape[0]):
         for j in range(img.shape[1]):
-            new_img[i][j] = 0 if img[i][j] < 220 else 255
+            new_img[i][j] = 0 if img[i][j] < THRESHOLD else 255
     new_img = new_img.ravel()
     new_img = [y/255.0 for y in new_img]
-    new_img = np.reshape(new_img, (3072, 1))
+    new_img = np.reshape(new_img, (common_config.NETWORK_INPUT_SIZE, 1))
 
     # decide direction
     direction = np.argmax(net.feedforward(new_img))

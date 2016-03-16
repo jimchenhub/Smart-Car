@@ -18,6 +18,7 @@ import sys
 import numpy as np
 
 SAVE_PATH = "../config/result/"
+OUTPUT_SIZE = 3
 
 #### Define the quadratic and cross-entropy cost functions
 
@@ -317,7 +318,7 @@ def vectorized_result(j):
     into a corresponding desired output from the neural network.
 
     """
-    e = np.zeros((3, 1))
+    e = np.zeros((OUTPUT_SIZE, 1))
     e[j] = 1.0
     return e
 
