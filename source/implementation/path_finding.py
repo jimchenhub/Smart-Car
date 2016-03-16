@@ -30,8 +30,8 @@ import common as common_config
 ## Main function
 # major variables
 cap = cv2.VideoCapture(0)
-# mo = move.Move()
-net = network.Network([76800, 30, 3])
+mo = move.Move()
+net = network.load("../config/result/0316-93%")
 
 while(cap.isOpened()):
     # Capture frame-by-frame
@@ -40,24 +40,28 @@ while(cap.isOpened()):
     # Our operations on the frame come here
     # Change frame to gray level image and do some trasition
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-    img = imgprocess.imageDW(gray,gray.shape,4)
-
-    # display image
-    cv2.imshow('img',img)
+    img = cv2.resize(gray,(64,48),interpolation=cv2.INTER_CUBIC)
+    new_img = np.zeros(img.shape)
+    for i in range(img.shape[0]):
+        for j in range(img.shape[1]):
+            new_img[i][j] = 0 if img[i][j] < 220 else 255
+    new_img = new_img.ravel()
+    new_img = [y/255.0 for y in new_img]
+    new_img = np.reshape(new_img, (3072, 1))
 
     # decide direction
-    #direction = net.feedforward(img)
+    direction = np.argmax(net.feedforward(new_img))
 
     # Choose direction or quit
     input_key = cv2.waitKey(1) & 0xFF
     if input_key == ord('q'):
         break
-    # if direction == 'w':
-    #     mo.forward(common_config.SLEEP_TIME)
-    # elif direction == 'a':
-    #     mo.turn_left(common_config.SLEEP_TIME)
-    # elif direction == 'd':
-    #     mo.turn_right(common_config.SLEEP_TIME)
+    if direction == 0:
+        mo.forward(common_config.SLEEP_TIME)
+    elif direction == 1:
+        mo.turn_left(common_config.SLEEP_TIME)
+    elif direction == 2:
+        mo.turn_right(common_config.SLEEP_TIME)
 
 # When everything done, release the capture
 cap.release()
@@ -65,7 +69,7 @@ cv2.destroyAllWindows()
 print "Finish recording"
 
 # shutdown the car
-# mo.stop()
-# mo.shutdown()
+mo.stop()
+mo.shutdown()
 print "Car shutdown"
 
