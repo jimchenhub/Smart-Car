@@ -17,10 +17,17 @@ import os
 import numpy as np
 import cv2
 
+# my library - configuration
+import sys
+sys.path.append("../config")
+import common as common_config
+
 # static variables
 DATA_DIR = "../data/expanded/"
 available_type = [".gif", ".jpg", ".jpeg", ".bmp", ".png"]
-INPUT_SIZE = 3072
+INPUT_SIZE = common_config.NETWORK_INPUT_SIZE
+OUTPUT_SIZE = 3
+
 
 # 从pkl或其他类型的文件中反序列化出训练数据
 def load_data():
@@ -66,7 +73,7 @@ def generate_data():
         fullfile = os.path.join(DATA_DIR, file)
         # read image
         img = cv2.imread(fullfile)
-        img = cv2.resize(img,(64,48),interpolation=cv2.INTER_CUBIC)
+        img = cv2.resize(img,(common_config.CAP_WIDTH,common_config.CAP_HEIGHT),interpolation=cv2.INTER_CUBIC)
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
         gray = gray.ravel() # 平展化
         gray = [y/255.0 for y in gray] # 将每个值都变成小于1的灰度比例
@@ -91,7 +98,7 @@ def vectorized_result(j):
     position and zeroes elsewhere.  This is used to convert a digit
     (0...2) into a corresponding desired output from the neural
     network."""
-    e = np.zeros((3, 1))
+    e = np.zeros((OUTPUT_SIZE, 1))
     e[j] = 1.0
     return e
 

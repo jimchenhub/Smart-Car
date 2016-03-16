@@ -5,8 +5,7 @@ Expand the data
 
 horizontal transfomation first, double the data size
 ---
-0311
-图像增强，增加几倍图像数据量
+通过使用二值化的方法加强图像
 '''
 
 ## Libraries
@@ -18,9 +17,11 @@ import numpy as np
 import cv2
 
 # static variables
-DATA_DIR = "../data/expanded"
+DATA_DIR = "../data/"
 available_type = [".gif", ".jpg", ".jpeg", ".bmp", ".png"]
 OUTPUT_DIR = "../data/expanded/"
+THRESHOLD = 220
+
 
 # 水平转换图像来扩充数据
 def horizontal_trans(name, img):
@@ -42,7 +43,7 @@ def color_enhancement(name, img):
     new_img = np.zeros(img.shape)
     for i in range(img.shape[0]):
         for j in range(img.shape[1]):
-            new_img[i][j] = 0 if img[i][j] < 220 else 255
+            new_img[i][j] = 0 if img[i][j] < THRESHOLD else 255
     name_part = name.split("-")
     new_name = name_part[0] + "-" + name_part[1] + "-" + str(int(name_part[2].split(".")[0]) + 2) + "." + name_part[2].split(".")[1]
     return (new_name, new_img)
