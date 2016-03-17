@@ -32,8 +32,8 @@ class Move(object):
     def __init__(self):
         gpio.setmode(gpio.BOARD)
 
-        self.left_wheel = Wheel(11, 12, 16, 18)
-        self.right_wheel = Wheel(13, 15, 29, 31)
+        self.right_wheel = Wheel(11, 12, 16, 18)
+        self.left_wheel = Wheel(13, 15, 29, 31)
 
         print("move initiated")
 
