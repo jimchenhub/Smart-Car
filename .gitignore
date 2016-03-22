@@ -1,2 +1,4 @@
 # Python:  
 *.py[cod] 
+/source/data/*.jpg
+*.jpg
