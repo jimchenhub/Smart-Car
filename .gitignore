@@ -2,3 +2,5 @@
 *.py[cod] 
 /source/data/*.jpg
 *.jpg
+*.pyc
+source/component/network.pyc
