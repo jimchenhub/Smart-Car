@@ -30,8 +30,8 @@ THRESHOLD = 220
 
 ## Main function
 # major variables
-cap = cv2.VideoCapture(0)
-mo = move.Move()
+cap = cv2.VideoCapture(1)
+# mo = move.Move()
 net = network.load("../config/result/0316-93%")
 
 while(cap.isOpened()):
@@ -41,7 +41,7 @@ while(cap.isOpened()):
     # Our operations on the frame come here
     # Change frame to gray level image and do some trasition
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-    img = cv2.resize(gray,(common_config.CAP_WIDTH,common_config.CAP_HEIGHT),interpolation=cv2.INTER_CUBIC)
+    img = imgprocess.imageDW(gray,(common_config.CAP_HEIGHT,common_config.CAP_WIDTH),1)
     new_img = np.zeros(img.shape)
     for i in range(img.shape[0]):
         for j in range(img.shape[1]):
@@ -54,15 +54,18 @@ while(cap.isOpened()):
     direction = np.argmax(net.feedforward(new_img))
 
     # Choose direction or quit
-    input_key = cv2.waitKey(1) & 0xFF
+    input_key = cv2.waitKey(0) & 0xFF
     if input_key == ord('q'):
         break
     if direction == 0:
         mo.forward(common_config.SLEEP_TIME)
+        print "forward"
     elif direction == 1:
         mo.turn_left(common_config.SLEEP_TIME)
+        print "turn left"
     elif direction == 2:
         mo.turn_right(common_config.SLEEP_TIME)
+        print "turn right"
 
 # When everything done, release the capture
 cap.release()
