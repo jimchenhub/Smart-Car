@@ -31,6 +31,7 @@ THRESHOLD = 220
 ## Main function
 # major variables
 cap = cv2.VideoCapture(1)
+cap.set(cv2.CAP_PROP_FPS, 60) # sety fps
 # mo = move.Move()
 net = network.load("../config/result/0316-93%")
 
