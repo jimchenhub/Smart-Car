@@ -54,13 +54,13 @@ def imageDW(img,(height,width),zoomR=1):
     # img_erode = cv2.erode(img, element)
     # img = cv2.absdiff(img_dilate,img_erode)
     #反色，即对二值图每个像素取反
-    img = cv2.bitwise_not(img);
+    img = cv2.bitwise_not(img)
     return img
 # 初始化摄像头
 def initCap():
     cap = cv2.VideoCapture(1)
-    cap.set(cv2.cv.CV_CAP_PROP_FRAME_WIDTH,common_config.CAP_WIDTH);
-    cap.set(cv2.cv.CV_CAP_PROP_FRAME_HEIGHT,common_config.CAP_HEIGHT);
+    cap.set(cv2.CAP_PROP_FRAME_WIDTH,common_config.CAP_WIDTH);
+    cap.set(cv2.CAP_PROP_FRAME_HEIGHT,common_config.CAP_HEIGHT);
     return cap
 # 裁剪图像,img为灰度图
 def cutImage(img):
@@ -69,12 +69,13 @@ def cutImage(img):
     img2 = img[h-h/2:h-1,0:w-1]
     return img2
 
-cap = initCap()
-while(cap.isOpened()):
-    ret,frame=cap.read()
-    img = cutImage(cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY))#RGB转换为灰度图
-    # cv2.imshow('img',img)
-    cv2.imshow('img',imageDW(img,img.shape,2))
-    if cv2.waitKey(1) & 0xFF == ord('q'):
-        break
-cap.release()
+def test_module():
+    cap = initCap()
+    while(cap.isOpened()):
+        ret,frame=cap.read()
+        img = cutImage(cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY))#RGB转换为灰度图
+        # cv2.imshow('img',img)
+        cv2.imshow('img',imageDW(img,img.shape,2))
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            break
+    cap.release()
