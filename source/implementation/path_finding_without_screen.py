@@ -31,10 +31,10 @@ THRESHOLD = 220
 ## Main function
 # major variables
 cap = cv2.VideoCapture(1)
-cap.set(cv2.CAP_PROP_FPS, 60) # sety fps
 # mo = move.Move()
 net = network.load("../config/result/0316-93%")
 
+pre_a = np.ndarray((3,1))
 while(cap.isOpened()):
     # Capture frame-by-frame
     ret, frame = cap.read()
@@ -54,6 +54,10 @@ while(cap.isOpened()):
     # decide direction
     a = net.feedforward(new_img)
     print a
+    if (pre_a == a).all():
+        print "Image not change. ignore this turn"
+        continue
+    pre_a = a.copy()
     direction = np.argmax(a)
     print direction
 
