@@ -24,6 +24,7 @@ from theano.tensor.signal import downsample # for pooling
 
 # static variables
 SAVE_PATH = "../config/result/"
+INPUT_SIZE = 3072
 OUTPUT_SIZE = 3
 
 GPU = False
@@ -46,7 +47,7 @@ from theano.tensor import tanh
 
 #### Load the MNIST data
 def load_data_shared(filename="../data/expanded/data.pkl"):
-    f = open(DATA_DIR+"data.pkl", 'rb')
+    f = open(filename, 'rb')
     training_data, validation_data, test_data = cPickle.load(f)
     f.close()
     def shared(data):
@@ -77,7 +78,7 @@ class Network(object):
         self.y = T.ivector("y") # output
         init_layer = self.layers[0]
         init_layer.set_inpt(self.x, self.x, self.mini_batch_size)
-        for i in xrange(1, len(len(layers))):
+        for i in xrange(1, len(layers)):
             prev_layer, layer = self.layers[i-1], self.layers[i]
             layer.set_inpt(prev_layer.output, prev_layer.output_dropout, self.mini_batch_size)
         self.output = self.layers[-1].output
@@ -285,6 +286,9 @@ class SoftmaxLayer(object):
         return T.mean(T.eq(y, self.y_out))
 
 ### other functions
+def size(data):
+    "Return the size of the dataset `data`."
+    return data[0].get_value(borrow=True).shape[0]
 
 def dropout_layer(layer, p_dropout):
     srng = shared_randomstreams.RandomStreams(
@@ -292,3 +296,23 @@ def dropout_layer(layer, p_dropout):
     mask = srng.binomial(n=1, p=1-p_dropout, size=layer.shape)
     return layer*T.cast(mask, theano.config.floatX)
 
+
+## Test main function
+if __name__ == "__main__":
+    training_data, validation_data, test_data = load_data_shared()
+    mini_batch_size = 10
+    # common NN
+    # net = Network([
+    #     FullyConnectedLayer(n_in=INPUT_SIZE, n_out=100),
+    #     SoftmaxLayer(n_in=100, n_out=OUTPUT_SIZE)], mini_batch_size)
+    # net.SGD(training_data, 60, mini_batch_size, 0.1, 
+    #         validation_data, test_data)
+    # CNN with 1 conv-pool layer
+    net = Network([
+        ConvPoolLayer(image_shape=(mini_batch_size, 1, 48, 64), 
+                      filter_shape=(20, 1, 5, 5),
+                      poolsize=(2, 2)),
+        FullyConnectedLayer(n_in=20*22*30, n_out=100),
+        SoftmaxLayer(n_in=100, n_out=OUTPUT_SIZE)], mini_batch_size)
+    net.SGD(training_data, 60, mini_batch_size, 0.1, 
+            validation_data, test_data)   
