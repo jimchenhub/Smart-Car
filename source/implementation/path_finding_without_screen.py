@@ -31,17 +31,39 @@ THRESHOLD = 220
 ## Main function
 # major variables
 cap = cv2.VideoCapture(1)
+ret, frame = cap.read()
 # mo = move.Move()
 net = network.load("../config/result/0316-93%")
 
+
+## Get Frame part
+#Continually updates the frame
+def updateFrame():
+    while(True):
+        ret, frame = cap.read()
+
+        while (frame == None): #Continually grab frames until we get a good one
+            ret, frame = cap.read()
+
+#Starts updating the images in a thread
+def start():
+    Thread(target=updateFrame, args=()).start()
+
+def getFrame():
+    return frame
+
+strat()
+
+## main loop
 pre_a = np.ndarray((3,1))
 while(cap.isOpened()):
     # Capture frame-by-frame
-    ret, frame = cap.read()
+    # ret, frame = cap.read()
+    current_frame = getFrame()
 
     # Our operations on the frame come here
     # Change frame to gray level image and do some trasition
-    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+    gray = cv2.cvtColor(current_frame, cv2.COLOR_BGR2GRAY)
     img = imgprocess.imageDW(gray,(common_config.CAP_HEIGHT,common_config.CAP_WIDTH),1)
     new_img = np.zeros(img.shape)
     for i in range(img.shape[0]):
