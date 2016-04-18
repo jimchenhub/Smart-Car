@@ -11,6 +11,7 @@ Find Path implementation
 # Standard library
 import time
 import sys
+from threading import Thread
 
 # Third party library
 import numpy as np
@@ -38,28 +39,32 @@ net = network.load("../config/result/0316-93%")
 
 ## Get Frame part
 #Continually updates the frame
-def updateFrame():
-    while(True):
-        ret, frame = cap.read()
-
-        while (frame == None): #Continually grab frames until we get a good one
+class GetFrameThread(Thread):
+    def __init__(self):  
+        Thread.__init__(self)
+        self.thread_stop = False  
+   
+    def run(self):
+        global ret, frame
+        while not self.thread_stop:  
             ret, frame = cap.read()
 
-#Starts updating the images in a thread
-def start():
-    Thread(target=updateFrame, args=()).start()
+    def stop(self):  
+        self.thread_stop = True  
 
 def getFrame():
-    return frame
+    global ret, frame
+    return ret, frame
 
-strat()
+tr = GetFrameThread()
+tr.start()
 
 ## main loop
 pre_a = np.ndarray((3,1))
 while(cap.isOpened()):
     # Capture frame-by-frame
     # ret, frame = cap.read()
-    current_frame = getFrame()
+    ret, current_frame = getFrame()
 
     # Our operations on the frame come here
     # Change frame to gray level image and do some trasition
@@ -100,6 +105,8 @@ while(cap.isOpened()):
             print "turn right"
 
 # When everything done, release the capture
+tr.stop() # stop the thread 
+
 cap.release()
 cv2.destroyAllWindows()
 print "Finish recording"

@@ -11,6 +11,7 @@ Find Path implementation
 # Standard library
 import time
 import sys
+from threading import Thread
 
 # Third party library
 import numpy as np
@@ -37,27 +38,31 @@ net = network.load("../config/result/0316-93%")
 
 ## Get Frame part
 #Continually updates the frame
-def updateFrame():
-    while(True):
-        ret, frame = cap.read()
-
-        while (frame == None): #Continually grab frames until we get a good one
+class GetFrameThread(Thread):
+    def __init__(self):  
+        Thread.__init__(self)
+        self.thread_stop = False  
+   
+    def run(self):
+        global ret, frame
+        while not self.thread_stop:  
             ret, frame = cap.read()
 
-#Starts updating the images in a thread
-def start():
-    Thread(target=updateFrame, args=()).start()
+    def stop(self):  
+        self.thread_stop = True  
 
 def getFrame():
-    return frame
+    global ret, frame
+    return ret, frame
 
-strat() # start thread
+tr = GetFrameThread()
+tr.start()
 
 
 while(cap.isOpened()):
     # Capture frame-by-frame
     # ret, frame = cap.read()
-    current_frame = getFrame()
+    ret, current_frame = getFrame()
 
     # Our operations on the frame come here
     # Change frame to gray level image and do some trasition
@@ -71,6 +76,7 @@ while(cap.isOpened()):
     new_img = [y/255.0 for y in new_img]
     new_img = np.reshape(new_img, (common_config.NETWORK_INPUT_SIZE, 1))
 
+    cv2.imshow("frame", img)
     # decide direction
     direction = np.argmax(net.feedforward(new_img))
 
@@ -79,22 +85,24 @@ while(cap.isOpened()):
     if input_key == ord('q'):
         break
     if direction == 0:
-        mo.forward(common_config.SLEEP_TIME)
+        # mo.forward(common_config.SLEEP_TIME)
         print "forward"
     elif direction == 1:
-        mo.turn_left(common_config.SLEEP_TIME)
+        # mo.turn_left(common_config.SLEEP_TIME)
         print "turn left"
     elif direction == 2:
-        mo.turn_right(common_config.SLEEP_TIME)
+        # mo.turn_right(common_config.SLEEP_TIME)
         print "turn right"
 
 # When everything done, release the capture
+tr.stop() # stop the thread 
+
 cap.release()
 cv2.destroyAllWindows()
 print "Finish recording"
 
 # shutdown the car
-mo.stop()
-mo.shutdown()
+# mo.stop()
+# mo.shutdown()
 print "Car shutdown"
 
