@@ -11,6 +11,7 @@ Find Path implementation
 # Standard library
 import time
 import sys
+from threading import Thread
 
 # Third party library
 import numpy as np
@@ -31,17 +32,43 @@ THRESHOLD = 220
 ## Main function
 # major variables
 cap = cv2.VideoCapture(1)
-cap.set(cv2.CAP_PROP_FPS, 60) # sety fps
+ret, frame = cap.read()
 # mo = move.Move()
 net = network.load("../config/result/0316-93%")
 
+
+## Get Frame part
+#Continually updates the frame
+class GetFrameThread(Thread):
+    def __init__(self):  
+        Thread.__init__(self)
+        self.thread_stop = False  
+   
+    def run(self):
+        global ret, frame
+        while not self.thread_stop:  
+            ret, frame = cap.read()
+
+    def stop(self):  
+        self.thread_stop = True  
+
+def getFrame():
+    global ret, frame
+    return ret, frame
+
+tr = GetFrameThread()
+tr.start()
+
+## main loop
+pre_a = np.ndarray((3,1))
 while(cap.isOpened()):
     # Capture frame-by-frame
-    ret, frame = cap.read()
+    # ret, frame = cap.read()
+    ret, current_frame = getFrame()
 
     # Our operations on the frame come here
     # Change frame to gray level image and do some trasition
-    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+    gray = cv2.cvtColor(current_frame, cv2.COLOR_BGR2GRAY)
     img = imgprocess.imageDW(gray,(common_config.CAP_HEIGHT,common_config.CAP_WIDTH),1)
     new_img = np.zeros(img.shape)
     for i in range(img.shape[0]):
@@ -54,6 +81,10 @@ while(cap.isOpened()):
     # decide direction
     a = net.feedforward(new_img)
     print a
+    if (pre_a == a).all():
+        print "Image not change. ignore this turn"
+        continue
+    pre_a = a.copy()
     direction = np.argmax(a)
     print direction
 
@@ -74,6 +105,8 @@ while(cap.isOpened()):
             print "turn right"
 
 # When everything done, release the capture
+tr.stop() # stop the thread 
+
 cap.release()
 cv2.destroyAllWindows()
 print "Finish recording"
