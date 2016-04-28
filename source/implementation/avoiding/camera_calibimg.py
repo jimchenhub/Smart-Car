@@ -3,7 +3,7 @@ import cv2
 import numpy as np
 
 import sys
-sys.path.append("../config")
+sys.path.append("../../config")
 import common as common_config
 
 H, W = (common_config.BINCAP_HEIGHT, common_config.BINCAP_WIDTH)
@@ -27,8 +27,8 @@ if __name__=='__main__':
         if j%50 == 0:
             i += 1
             print i
-            cv2.imwrite('data\\img0\\'+str(i)+'.jpg', frame0)
-            cv2.imwrite('data\\img1\\'+str(i)+'.jpg', frame1)
+            cv2.imwrite('data/img0/'+str(i)+'.jpg', frame0)
+            cv2.imwrite('data/img1/'+str(i)+'.jpg', frame1)
         if cv2.waitKey(1) & 0xFF==ord('q'):
             break
 

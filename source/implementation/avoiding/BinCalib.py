@@ -6,7 +6,7 @@ from matplotlib import pyplot as plt
 
 import doXML
 import sys
-sys.path.append("../config")
+sys.path.append("../../config")
 import common as common_config
 
 criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 100, 1e-5)
@@ -18,8 +18,8 @@ def bincalib():
     objpoints = [] # 3d point in real world space
     imgpoints1 = [] # 2d points in image plane.
     imgpoints2 = [] # 2d points in image plane.
-    images1 = glob.glob('data\\img0\\*.jpg')
-    images2 = glob.glob('data\\img1\\*.jpg')
+    images1 = glob.glob('data/img0/*.jpg')
+    images2 = glob.glob('data/img1/*.jpg')
     for (fname1, fname2) in zip(images1,images2):
         img1 = cv2.resize(cv2.imread(fname1), (W, H), interpolation=cv2.INTER_CUBIC)
         img2 = cv2.resize(cv2.imread(fname2), (W, H), interpolation=cv2.INTER_CUBIC)
@@ -59,7 +59,7 @@ def bincalib():
          objpoints, imgpoints1, imgpoints2, mtx1, dist1, mtx2, dist2,
          (W, H), None, None, None, flags=cv2.CALIB_FIX_INTRINSIC, criteria=criteria)
     T = -T
-    doXML.createXML( 'data\\init.xml', ret, mtx1, dist1, mtx2, dist2, R, T, E, F)
+    doXML.createXML( 'data/init.xml', ret, mtx1, dist1, mtx2, dist2, R, T, E, F)
 
 if __name__=='__main__':
     bincalib()

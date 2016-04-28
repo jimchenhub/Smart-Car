@@ -25,5 +25,5 @@ CAR_REAL_WIDTH = 130
 
 # Max distance(mm) of avoiding
 MAXDEPTH = 300
-
+MINDEPTH = 180
 
