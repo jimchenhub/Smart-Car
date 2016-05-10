@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 import numpy as np
 import cv2
-<<<<<<< HEAD
-=======
+
+
 from matplotlib import pyplot as plt
->>>>>>> 1d4985d41239348dc923930ea25c923e533ed194
+
 
 import doXML
 import sys
@@ -12,16 +12,16 @@ sys.path.append("../../config")
 import common as common_config
 
 criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 100, 1e-5)
-<<<<<<< HEAD
+
 BINIMG_H, BINIMG_W = (common_config.BINIMG_HEIGHT, common_config.BINIMG_WIDTH)
-=======
+
 H, W = (common_config.BINCAP_HEIGHT, common_config.BINCAP_WIDTH)
->>>>>>> 1d4985d41239348dc923930ea25c923e533ed194
+
 
 def rectify(mtx1, dist1, mtx2, dist2, R, T):
     # R：行对准的矫正旋转矩阵；P：3*4的左右投影方程；Q：4*4的重投影矩阵
     R1, R2, P1, P2, Q, roi1, roi2 = cv2.stereoRectify(
-<<<<<<< HEAD
+
         mtx1, dist1,
         mtx2, dist2,
         (BINIMG_W, BINIMG_H),
@@ -46,41 +46,41 @@ def rectify(mtx1, dist1, mtx2, dist2, R, T):
         (BINIMG_W, BINIMG_H),
         cv2.CV_16SC2
     )
-=======
+
         mtx1, dist1, mtx2, dist2, (W, H), R, T, flags=cv2.CALIB_ZERO_DISPARITY, alpha=-1, newImageSize=(W, H))
     if __name__ == '__main__':
         printMat(R1, R2, P1, P2, Q, roi1, roi2)
     # 产生校正图像所需的变换参数（mapx, mapy）
     mapx1, mapy1 = cv2.initUndistortRectifyMap(mtx1, dist1, R1, P1, (W, H), cv2.CV_16SC2)
     mapx2, mapy2 = cv2.initUndistortRectifyMap(mtx2, dist2, R2, P2, (W, H), cv2.CV_16SC2)
->>>>>>> 1d4985d41239348dc923930ea25c923e533ed194
+
     return mapx1, mapy1, mapx2, mapy2, Q, roi1, roi2
 
 
 def init():
     initdict = doXML.parseXML('data/init.xml')
-<<<<<<< HEAD
-=======
+
+
     ret = initdict['ret']
->>>>>>> 1d4985d41239348dc923930ea25c923e533ed194
+
     mtx1 = initdict['mtx1']
     dist1 = initdict['dist1']
     mtx2 = initdict['mtx2']
     dist2 = initdict['dist2']
     R = initdict['R']
     T = initdict['T']
-<<<<<<< HEAD
-=======
+
+
     E = initdict['E']
     F = initdict['F']
->>>>>>> 1d4985d41239348dc923930ea25c923e533ed194
+
     mapx1, mapy1, mapx2, mapy2, Q, roi1, roi2 = rectify(mtx1, dist1, mtx2, dist2, R, T)
     return mapx1, mapy1, mapx2, mapy2, Q, roi1, roi2
 
 
-<<<<<<< HEAD
+
 # test function
-=======
+
 def readyStereoBM(roi1, roi2):
     stereobm = cv2.StereoBM_create(numDisparities=128, blockSize=31)
     stereobm.setPreFilterSize(31)#41
@@ -109,7 +109,7 @@ def imshow():
     plt.show()
 
 
->>>>>>> 1d4985d41239348dc923930ea25c923e533ed194
+
 def printMat(R1, R2, P1, P2, Q, roi1, roi2):
     print 'R1\n', R1
     print 'R2\n', R2
@@ -120,7 +120,7 @@ def printMat(R1, R2, P1, P2, Q, roi1, roi2):
     print 'roi2\n', roi2
 
 
-<<<<<<< HEAD
+
 if __name__ == '__main__':
     mapx1, mapy1, mapx2, mapy2, Q, roi1, roi2= init()
     frame1 = cv2.imread('data/img0/1.jpg')
@@ -133,7 +133,7 @@ if __name__ == '__main__':
     cv2.imshow('rectified2', dst2)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
-=======
+
 def test(disparity, _3dImage):
     # print disparity[0][0], _3dImage[0][0]
     # print disparity[479][0], _3dImage[479][0]
@@ -212,6 +212,6 @@ if __name__ == '__main__':
             plt.subplot(1, len(imgs1), i), plt.imshow(disparity, 'gray')
             i += 1
         plt.show()
->>>>>>> 1d4985d41239348dc923930ea25c923e533ed194
+
 
 

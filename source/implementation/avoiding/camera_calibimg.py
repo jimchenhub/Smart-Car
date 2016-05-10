@@ -6,21 +6,21 @@ import sys
 sys.path.append("../../config")
 import common as common_config
 
-<<<<<<< HEAD
+
 H, W = (common_config.BINIMG_HEIGHT, common_config.BINIMG_WIDTH)
 if __name__=='__main__':
     cap0 = cv2.VideoCapture(1)
     cap0.set(cv2.CAP_PROP_FRAME_WIDTH, W);
     cap0.set(cv2.CAP_PROP_FRAME_HEIGHT,H);
     cap1 = cv2.VideoCapture(0)
-=======
+
 H, W = (common_config.BINCAP_HEIGHT, common_config.BINCAP_WIDTH)
 if __name__=='__main__':
     cap0 = cv2.VideoCapture(0)
     cap0.set(cv2.CAP_PROP_FRAME_WIDTH, W);
     cap0.set(cv2.CAP_PROP_FRAME_HEIGHT,H);
     cap1 = cv2.VideoCapture(1)
->>>>>>> 1d4985d41239348dc923930ea25c923e533ed194
+
     cap1.set(cv2.CAP_PROP_FRAME_WIDTH, W);
     cap1.set(cv2.CAP_PROP_FRAME_HEIGHT, H);
     dst = np.zeros((H,2*W,3), np.uint8)
