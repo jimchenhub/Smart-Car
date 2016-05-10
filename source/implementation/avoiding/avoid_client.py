@@ -13,6 +13,34 @@ BINCAP_H, BINCAP_W = (common_config.BINCAP_HEIGHT, common_config.BINCAP_WIDTH)
 ORIENT = 1
 
 
+class GetFrameLThread(Thread):
+    def __init__(self):
+        Thread.__init__(self)
+        self.thread_stop = False
+
+    def run(self):
+        global retL, frameL
+        while not self.thread_stop:
+            retL, frameL = capL.read()
+
+    def stop(self):
+        self.thread_stop = True
+
+
+class GetFrameRThread(Thread):
+    def __init__(self):
+        Thread.__init__(self)
+        self.thread_stop = False
+
+    def run(self):
+        global retR, frameR
+        while not self.thread_stop:
+            retR, frameR = capR.read()
+
+    def stop(self):
+        self.thread_stop = True
+
+
 def getOrient():
     global ORIENT
     return ORIENT
@@ -36,19 +64,21 @@ capL.set(cv2.CAP_PROP_FRAME_HEIGHT, BINCAP_H)
 capR = cv2.VideoCapture(1)
 capR.set(cv2.CAP_PROP_FRAME_WIDTH, BINCAP_W)
 capR.set(cv2.CAP_PROP_FRAME_HEIGHT, BINCAP_H)
+retL, frameL = capL.read()
+retR, frameR = capR.read()
+ltr = GetFrameLThread()
+rtr = GetFrameRThread()
+ltr.start()
+rtr.start()
 
 encode_param=[int(cv2.IMWRITE_JPEG_QUALITY),90]
 
 try:
     s.connect((host,port))
-    i = 0
     while capL.isOpened() and capR.isOpened():
         T1 = time.time()
-        i += 1
-        # retL, frameL = capL.read()
-        # retR, frameR = capR.read()
-        retL, img_encodeL = cv2.imencode('.jpeg', capL.read()[1][50:100], encode_param)
-        retR, img_encodeR = cv2.imencode('.jpeg', capR.read()[1][50:100], encode_param)
+        retL, img_encodeL = cv2.imencode('.jpeg', frameL[50:100], encode_param)
+        retR, img_encodeR = cv2.imencode('.jpeg', frameR[50:100], encode_param)
         dataL = np.array(img_encodeL)
         stringDataL = dataL.tostring()
         dataR = np.array(img_encodeR)
@@ -69,13 +99,11 @@ try:
         print T2-T1
 except socket.error,e:
     print "error:",e
-    exit()
 finally:
     s.close()
+    ltr.stop()
+    rtr.stop()
     exit()
-
-# tr.stop()
-
 
 
 
