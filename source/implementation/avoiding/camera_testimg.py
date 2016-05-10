@@ -8,20 +8,11 @@ import common as common_config
 
 H, W = (common_config.BINCAP_HEIGHT, common_config.BINCAP_WIDTH)
 
-H, W = (common_config.BINIMG_HEIGHT, common_config.BINIMG_WIDTH)
-
 if __name__=='__main__':
     cap0 = cv2.VideoCapture(1)
     cap0.set(cv2.CAP_PROP_FRAME_WIDTH, W);
     cap0.set(cv2.CAP_PROP_FRAME_HEIGHT, H);
     cap1 = cv2.VideoCapture(0)
-
-if __name__=='__main__':
-    cap0 = cv2.VideoCapture(0)
-    cap0.set(cv2.CAP_PROP_FRAME_WIDTH, W);
-    cap0.set(cv2.CAP_PROP_FRAME_HEIGHT, H);
-    cap1 = cv2.VideoCapture(1)
-
     cap1.set(cv2.CAP_PROP_FRAME_WIDTH, W);
     cap1.set(cv2.CAP_PROP_FRAME_HEIGHT, H);
     dst = np.zeros((H,2*W,3), np.uint8)
@@ -43,4 +34,3 @@ if __name__=='__main__':
     cv2.destroyAllWindows()
     cap0.release()
     cap1.release()
-
