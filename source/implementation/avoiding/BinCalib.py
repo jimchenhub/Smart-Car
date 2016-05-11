@@ -10,11 +10,7 @@ sys.path.append("../../config")
 import common as common_config
 
 criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 100, 1e-5)
-
 BINIMG_H, BINIMG_W = (common_config.BINIMG_HEIGHT, common_config.BINIMG_WIDTH)
-
-
-H, W = (common_config.BINCAP_HEIGHT, common_config.BINCAP_WIDTH)
 
 def bincalib():
     objp = np.zeros((6*7,3), np.float32)
@@ -26,19 +22,10 @@ def bincalib():
     images1 = glob.glob('data/img0/*.jpg')
     images2 = glob.glob('data/img1/*.jpg')
     for (fname1, fname2) in zip(images1,images2):
-
         img1 = cv2.imread(fname1)
         img2 = cv2.imread(fname2)
         gray1 = cv2.cvtColor(img1, cv2.COLOR_BGR2GRAY)
         gray2 = cv2.cvtColor(img2, cv2.COLOR_BGR2GRAY)
-
-        img1 = cv2.resize(cv2.imread(fname1), (W, H), interpolation=cv2.INTER_CUBIC)
-        img2 = cv2.resize(cv2.imread(fname2), (W, H), interpolation=cv2.INTER_CUBIC)
-        gray1 = cv2.cvtColor(img1, cv2.COLOR_BGR2GRAY)
-        gray2 = cv2.cvtColor(img2, cv2.COLOR_BGR2GRAY)
-        # ret, gray1=cv2.threshold(gray1,50,255,cv2.THRESH_BINARY)
-        # ret, gray2=cv2.threshold(gray2,50,255,cv2.THRESH_BINARY)
-
         # Find the chess board corners
         ret1, corners1 = cv2.findChessboardCorners(gray1, (7, 6), None)
         ret2, corners2 = cv2.findChessboardCorners(gray2, (7, 6), None)
@@ -52,18 +39,13 @@ def bincalib():
             imgpoints2.append(corners22)
             # img = cv2.drawChessboardCorners(img1, (7,6), corners21, ret1)
             # cv2.imshow('img', img)
-
             # cv2.waitKey(1000)
-
-            # cv2.waitKey(300)
-
 
     # mtx：摄像机内参数矩阵
     # dist：畸变系数(k1,k2,p1,p2[,k3[,k4,k5,k6],[s1,s2,s3,s4]]) k1和k2是径向形变系数，p1和p2是切向形变系数
     # rvecs：每一个靶标图片的对应的旋转矢量
     # tvecs：每一个靶标图片的对应的平移矢量grayL.shape[::-1]gray2.shape[::-1]
     ret1, mtx1, dist1, rvecs1, tvecs1 = cv2.calibrateCamera(
-
         objpoints,
         imgpoints1,
         (BINIMG_W, BINIMG_H),
@@ -77,18 +59,12 @@ def bincalib():
         None, None,
         flags=cv2.CALIB_FIX_K3
     )
-
-        objpoints, imgpoints1,(W, H), None, None, flags=cv2.CALIB_FIX_K3)
-    ret2, mtx2, dist2, rvecs2, tvecs2 = cv2.calibrateCamera(
-        objpoints, imgpoints2,(W, H), None, None, flags=cv2.CALIB_FIX_K3)
-
     # 双目立体标定
     # R：旋转矩阵；T：平移矩阵；E：本征矩阵；F：基础矩阵；
     # ret, mtx1, dist1, mtx2, dist2, R, T, E, F = cv2.stereoCalibrate(
     #     objpoints, imgpoints1, imgpoints2, mtx1, dist1, mtx2, dist2,
     #     (w, h),None, None, None, flags=cv2.CALIB_FIX_K3, criteria=criteria)
     ret, mtx1, dist1, mtx2, dist2, R, T, E, F = cv2.stereoCalibrate(
-
          objpoints,
         imgpoints1, imgpoints2,
         mtx1, dist1,
@@ -99,11 +75,6 @@ def bincalib():
         criteria=criteria
     )
     # T = -T
-
-         objpoints, imgpoints1, imgpoints2, mtx1, dist1, mtx2, dist2,
-         (W, H), None, None, None, flags=cv2.CALIB_FIX_INTRINSIC, criteria=criteria)
-    T = -T
-
     doXML.createXML( 'data/init.xml', ret, mtx1, dist1, mtx2, dist2, R, T, E, F)
 
 if __name__=='__main__':
