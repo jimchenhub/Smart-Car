@@ -18,64 +18,79 @@ import cv2
 # my library
 sys.path.append("../config")
 sys.path.append("../component")
-# import move
-# import network
+sys.path.append("./avoiding")
+import move
 import image_preprocess as imgprocess
 import common as common_config
-import rectify as re
+import avoid_client
 
 # get all the captures
 path_cap = cv2.VideoCapture(0)
-avoiding_left_cap = cv2.VideoCapture(1)
-avoiding_right_cap = cv2.VideoCapture(2)
 
 # global variables -- frames
 path_ret, path_frame = path_cap.read()
-avoiding_left_ret, avoiding_left_frame = avoiding_left_cap.read()
-avoiding_right_ret, avoiding_right_frame = avoiding_right_cap.read()
 
-## Get Frame part
-#Continually updates the frame
-class GetFrameThread(Thread):
-    def __init__(self):  
-        Thread.__init__(self)
-        self.thread_stop = False  
-   
-    def run(self):
-        global path_ret, path_frame
-        global avoiding_left_ret, avoiding_left_frame
-        global avoiding_right_ret, avoiding_right_frame
-
-        while not self.thread_stop:  
-            path_ret, path_frame = path_cap.read()
-            avoiding_left_ret, avoiding_left_frame = avoiding_left_cap.read()
-            avoiding_right_ret, avoiding_right_frame = avoiding_right_cap.read()
-
-    def stop(self):  
-        self.thread_stop = True
-
-tr = GetFrameThread()
-tr.start()
-
-
-def bypass():
+def bypass(path_cap, path_frame):
     # do not need to get frame by read function.
     # Directly use global variables
+    global path_frame
 
     ###### Prepare #########
-    # 得到矫正重映射矩阵
-    mapx1, mapy1, mapx2, mapy2, Q, roi1, roi2 = re.init()
-    # 得到检测到的最大距离对应的视差值
-    minDisparity = getDisparityValue(Q, maxDepth)
-    # 得到在maxDepth距离下实际车宽在像素图中对应的像素宽度，用于判断可容小车通过的空隙
-    car_width_px = getWidth_px(Q, carWidth, maxDepth)
-    winY = getWinY(Q, 0, capHeight, maxDepth)
-    winX = getWinX(Q, -carWidth/2, carWidth/2, maxDepth)
+    avoid_client.init(capL_id=2, capR_id=1)
 
-    stereo = re.readyStereoBM(roi1, roi2)
+    # get direction
+    direction = avoid_client.getOrient()
+    first_dir = direction ''' first direction. important variable'''
 
-    disparity = getDisparity(cap0, cap1, stereo, mapx1, mapy1, mapx2, mapy2)
-    orient = obstacle(winX, winY, minDisparity, maxDisparity, disparity)
+    # 先离开障碍物面前
+    while direction is not 2:
+        if first_dir is 3:
+            # 左转，前进，右转
+            mo.turn_left(common_config.SLEEP_TIME)
+            mo.forward(common_config.SLEEP_TIME)
+            mo.turn_right(common_config.SLEEP_TIME)
+        elif first_dir is 4:
+            mo.turn_right(common_config.SLEEP_TIME)
+            mo.forward(common_config.SLEEP_TIME)
+            mo.turn_left(common_config.SLEEP_TIME)
+        direction = avoid_client.getOrient()
 
+    # 试探性地前进
+    flag = False
+    while(True): #在没找到地上的路之前
+        if first_dir is 3:
+            mo.turn_right(common_config.SLEEP_TIME) if flag is False
+            direction = avoid_client.getOrient()
+            if direction is not 2:
+                mo.turn_left(common_config.SLEEP_TIME)
+                mo.forward(common_config.SLEEP_TIME)
+                flag = False
+            else:
+                mo.forward(common_config.SLEEP_TIME)
+                flag = True
+        elif first_dir is 4:
+            mo.turn_left(common_config.SLEEP_TIME) if flag is False
+            direction = avoid_client.getOrient()
+            if direction is not 2:
+                mo.turn_right(common_config.SLEEP_TIME)
+                mo.forward(common_config.SLEEP_TIME)
+                flag = False
+            else:
+                mo.forward(common_config.SLEEP_TIME)
+                flag = True
+        # 获取地上的路
+        # .....
 
-tr.stop()
+    # 找到路之后，往回转一下即可
+    mo.turn_left(common_config.SLEEP_TIME) if first_dir is 3
+    mo.turn_right(common_config.SLEEP_TIME) if first_dir is 4
+
+if __name__ == '__main__':
+    mo = move.Move()
+    tr = GetFrameThread()
+    tr.start()
+
+    bypass(path_cap, avoiding_left_cap, avoiding_right_cap, path_frame, avoiding_left_frame, avoiding_right_frame)
+
+    tr.stop()
+
