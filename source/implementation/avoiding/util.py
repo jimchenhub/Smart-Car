@@ -16,7 +16,7 @@ carWidth = common_config.CAR_REAL_WIDTH
 capHeight = common_config.BINCAP_REAL_HEIGHT
 sleep_time = common_config.SLEEP_TIME
 
-    
+
 def getWinX(Q, X1, X2, Z):
     f = Q[2][3]
     Q_inv = np.linalg.inv(Q)
@@ -137,7 +137,7 @@ def getOriention(disparity):
 def hasRoad(img):
     S = img.shape[0]*img.shape[1]+0.0
     S1 = len([i for i in np.reshape(img, S) if i>254])
-    if S1/S > 0.02:
+    if S1/S > 0.05:
         return True
     return False
 
