@@ -23,12 +23,25 @@ import move
 import image_preprocess as imgprocess
 import common as common_config
 import avoid_client
+import util
 
 # get all the captures
 path_cap = cv2.VideoCapture(0)
 
 # global variables -- frames
 path_ret, path_frame = path_cap.read()
+
+def process_img(frame):
+    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+    img = imgprocess.imageDW(gray,(common_config.CAP_HEIGHT,common_config.CAP_WIDTH),1)
+    new_img = np.zeros(img.shape)
+    for i in range(img.shape[0]):
+        for j in range(img.shape[1]):
+            new_img[i][j] = 0 if img[i][j] < THRESHOLD else 255
+    new_img = new_img.ravel()
+    new_img = [y/255.0 for y in new_img]
+    new_img = np.reshape(new_img, (common_config.NETWORK_INPUT_SIZE, 1))
+    return new_img
 
 def bypass(path_cap, path_frame):
     # do not need to get frame by read function.
@@ -57,7 +70,7 @@ def bypass(path_cap, path_frame):
 
     # 试探性地前进
     flag = False
-    while(True): #在没找到地上的路之前
+    while(!util.hasRoad(process_img(path_frame))): #在没找到地上的路之前
         if first_dir is 3:
             mo.turn_right(common_config.SLEEP_TIME) if flag is False
             direction = avoid_client.getOrient()
@@ -78,8 +91,6 @@ def bypass(path_cap, path_frame):
             else:
                 mo.forward(common_config.SLEEP_TIME)
                 flag = True
-        # 获取地上的路
-        # .....
 
     # 找到路之后，往回转一下即可
     mo.turn_left(common_config.SLEEP_TIME) if first_dir is 3
@@ -90,7 +101,7 @@ if __name__ == '__main__':
     tr = GetFrameThread()
     tr.start()
 
-    bypass(path_cap, avoiding_left_cap, avoiding_right_cap, path_frame, avoiding_left_frame, avoiding_right_frame)
+    bypass(path_cap, path_frame)
 
     tr.stop()
 
