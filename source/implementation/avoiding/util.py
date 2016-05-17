@@ -7,7 +7,7 @@ import cv2
 import sys
 sys.path.append("../../config")
 import common as common_config
-import rectify as re
+import rectify
 import stereomatch as sm
 BINIMG_H, BINIMG_W = (common_config.BINIMG_HEIGHT, common_config.BINIMG_WIDTH)
 maxDepth = common_config.MAXDEPTH
@@ -16,7 +16,7 @@ carWidth = common_config.CAR_REAL_WIDTH
 capHeight = common_config.BINCAP_REAL_HEIGHT
 sleep_time = common_config.SLEEP_TIME
 
-
+    
 def getWinX(Q, X1, X2, Z):
     f = Q[2][3]
     Q_inv = np.linalg.inv(Q)
@@ -55,7 +55,7 @@ def getWidth_px(Q, realWidth, Z):
     return width_px
 
 
-mapx1, mapy1, mapx2, mapy2, Q, roi1, roi2 = re.init()
+mapx1, mapy1, mapx2, mapy2, Q, roi1, roi2 = rectify.init()
 # 得到检测到的最大距离对应的视差值
 minDisparity = getDisparityValue(Q, maxDepth)
 maxDisparity = getDisparityValue(Q, minDepth)
@@ -132,6 +132,14 @@ def getOriention(disparity):
     if orient == 0 or orient == 2:
         return orient
     return turnTo(disparity)
+
+
+def hasRoad(img):
+    S = img.shape[0]*img.shape[1]+0.0
+    S1 = len([i for i in np.reshape(img, S) if i>254])
+    if S1/S > 0.02:
+        return True
+    return False
 
 
 if __name__ == '__main__':
