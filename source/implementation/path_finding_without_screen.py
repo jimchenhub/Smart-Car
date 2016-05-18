@@ -89,20 +89,22 @@ while(cap.isOpened()):
     print direction
 
     # Choose direction or quit
-    input_key = raw_input("move or quit?")
+    # input_key = raw_input("move or quit?")
+    input_key = 'm'
 
     if input_key == 'q':
         break
     elif input_key == 'm':
         if direction == 0:
-            # mo.forward(common_config.SLEEP_TIME)
+            mo.forward(common_config.SLEEP_TIME)
             print "forward"
         elif direction == 1:
-            # mo.turn_left(common_config.SLEEP_TIME)
+            mo.turn_left(common_config.SLEEP_TIME)
             print "turn left"
         elif direction == 2:
-            # mo.turn_right(common_config.SLEEP_TIME)
+            mo.turn_right(common_config.SLEEP_TIME)
             print "turn right"
+    time.sleep(0.1)
 
 # When everything done, release the capture
 tr.stop() # stop the thread 
@@ -112,7 +114,7 @@ cv2.destroyAllWindows()
 print "Finish recording"
 
 # shutdown the car
-# mo.stop()
-# mo.shutdown()
+mo.stop()
+mo.shutdown()
 print "Car shutdown"
 

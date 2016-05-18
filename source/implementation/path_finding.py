@@ -64,7 +64,7 @@ while(cap.isOpened()):
     # ret, frame = cap.read()
     ret, current_frame = getFrame()
 
-    # Our operations on the frame come here
+    # Our operations on the frame come here 
     # Change frame to gray level image and do some trasition
     gray = cv2.cvtColor(current_frame, cv2.COLOR_BGR2GRAY)
     img = imgprocess.imageDW(gray,(common_config.CAP_HEIGHT,common_config.CAP_WIDTH),1)
@@ -72,11 +72,14 @@ while(cap.isOpened()):
     for i in range(img.shape[0]):
         for j in range(img.shape[1]):
             new_img[i][j] = 0 if img[i][j] < THRESHOLD else 255
+
+    cv2.imshow("frame", new_img)
+
     new_img = new_img.ravel()
     new_img = [y/255.0 for y in new_img]
     new_img = np.reshape(new_img, (common_config.NETWORK_INPUT_SIZE, 1))
 
-    cv2.imshow("frame", img)
+    
     # decide direction
     direction = np.argmax(net.feedforward(new_img))
 
